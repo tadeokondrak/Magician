@@ -12,7 +12,6 @@ namespace Magician.Renderer
         Color c;
         int size;
         IntPtr font;
-        bool disposed = false;
 
         public Text(string s, Color c, int size, string fp = "")
         {
@@ -62,6 +61,7 @@ namespace Magician.Renderer
             Scribe.Error("Text as Multi not supported yet");
             throw new Exception();
         }
+
         /* IDisposable implementation */
         public void Dispose()
         {
@@ -71,15 +71,9 @@ namespace Magician.Renderer
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (font != IntPtr.Zero)
             {
-                if (disposing)
-                {
-                }
-                // Close the font
                 TTF_CloseFont(font);
-                font = IntPtr.Zero;
-                disposed = true;
             }
         }
 
