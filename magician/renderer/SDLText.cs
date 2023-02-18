@@ -36,11 +36,13 @@ namespace Magician.Renderer
             }
 
             // Create an SDL color from a Color
-            SDL_Color sdlC;
-            sdlC.r = (byte)c.R;
-            sdlC.g = (byte)c.G;
-            sdlC.b = (byte)c.B;
-            sdlC.a = (byte)c.A;
+            SDL_Color sdlC = new()
+            {
+                r = (byte)c.R,
+                g = (byte)c.G,
+                b = (byte)c.B,
+                a = (byte)c.A,
+            };
             //IntPtr textSurface = TTF_RenderText_Solid(font, s, sdlC);
             IntPtr textSurface = TTF_RenderText_Blended(font, s, sdlC);
             //IntPtr textSurface = TTF_RenderText_Shaded(font, s, sdlC, Data.Col.UIDefault.BG);
