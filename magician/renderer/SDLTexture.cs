@@ -5,7 +5,7 @@ namespace Magician.Renderer
 {
     public class Texture : IDisposable
     {
-        IntPtr texture;
+        IntPtr texture; // SDL_Texture*
         public int Width { get; private set; }
         public int Height { get; private set; }
 
