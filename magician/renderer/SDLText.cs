@@ -14,7 +14,7 @@ namespace Magician.Renderer
         IntPtr font;
         bool disposed = false;
 
-        public Text(string s, Color c, int size, string fp="")
+        public Text(string s, Color c, int size, string fp = "")
         {
             if (FallbackFontPath == "")
             {
