@@ -99,7 +99,6 @@ namespace Magician
                     );
                 }
                 j++;
-                tx.Dispose();
             }
             m.Parented(Geo.Ref.Origin);
             return m.DrawFlags(DrawMode.INVISIBLE);
@@ -251,7 +250,6 @@ namespace Magician
                 m.Add(
                     tmp.Positioned(out0[0] + xOffset, out0[1] + yOffset)
                 );
-                tx.Dispose();
                 j++;
             }
             return m.DrawFlags(DrawMode.INVISIBLE);

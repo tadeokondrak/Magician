@@ -1,9 +1,14 @@
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using static SDL2.SDL;
-using static SDL2.SDL_ttf;
 
 namespace Magician.Renderer
 {
-    public class Text : IDisposable
+    public class Text
     {
         public static string FallbackFontPath = "";
         string fontPath;
@@ -11,7 +16,7 @@ namespace Magician.Renderer
         string s;
         Color c;
         int size;
-        IntPtr font;
+        Font font;
 
         public Text(string s, Color c, int size, string fp = "")
         {
@@ -23,32 +28,26 @@ namespace Magician.Renderer
             this.c = c;
             this.size = size;
             fontPath = fp == "" ? FallbackFontPath : fp;
-            // WIP text support
-            // Open the default font
-            font = TTF_OpenFont(fontPath, size);
+            FontCollection collection = new();
+            FontFamily family = collection.Add(fontPath);
+            font = family.CreateFont(size);
         }
 
         public Texture Render()
         {
-            if (font == IntPtr.Zero)
-            {
-                Scribe.Error($"{SDL_GetError()}");
-            }
+            SixLabors.ImageSharp.Color imageColor = new(new Argb32((byte)c.R, (byte)c.G, (byte)c.B, (byte)c.A));
 
-            // Create an SDL color from a Color
-            SDL_Color sdlC = new()
+            TextOptions textOptions = new(font);
+            FontRectangle rectangle = TextMeasurer.Measure(s, textOptions);
+            using Image<Rgba32> image = new((int)rectangle.Width, (int)rectangle.Height);
+            IPathCollection paths = TextBuilder.GenerateGlyphs(s, textOptions);
+            image.Mutate(x => x.Fill(imageColor, paths));
+            IntPtr textSurface = SDL_CreateRGBSurfaceWithFormat(0, (int)rectangle.Width, (int)rectangle.Height, 32, SDL_PIXELFORMAT_ABGR8888);
+            unsafe
             {
-                r = (byte)c.R,
-                g = (byte)c.G,
-                b = (byte)c.B,
-                a = (byte)c.A,
-            };
-            //IntPtr textSurface = TTF_RenderText_Solid(font, s, sdlC);
-            IntPtr textSurface = TTF_RenderText_Blended(font, s, sdlC);
-            //IntPtr textSurface = TTF_RenderText_Shaded(font, s, sdlC, Data.Col.UIDefault.BG);
-            if (textSurface == IntPtr.Zero)
-            {
-                Scribe.Error($"{SDL_GetError()}");
+                SDL_Surface* surfacePtr = (SDL_Surface*)textSurface;
+                Span<Rgba32> dest = new((void*)surfacePtr->pixels, surfacePtr->pitch * surfacePtr->h);
+                image.CopyPixelDataTo(dest);
             }
 
             IntPtr textTexture = SDL_CreateTextureFromSurface(SDLGlobals.renderer, textSurface);
@@ -62,26 +61,6 @@ namespace Magician.Renderer
         {
             Scribe.Error("Text as Multi not supported yet");
             throw new Exception();
-        }
-
-        /* IDisposable implementation */
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (font != IntPtr.Zero)
-            {
-                TTF_CloseFont(font);
-            }
-        }
-
-        ~Text()
-        {
-            Dispose(false);
         }
 
         public override string ToString()

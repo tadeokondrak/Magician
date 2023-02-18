@@ -20,7 +20,6 @@ namespace Magician.UI
                 .Textured(t.Render())
                 .DrawFlags(DrawMode.INVISIBLE)
                 ;
-                t.Dispose();
             }
         }
         public Paragraph(double x, double y, string s, Color c, int size, char delimiter = '\n', string fp = "") : this(x, y, fp, c, size, s.Split(delimiter)) { }
@@ -185,7 +184,6 @@ namespace Magician.UI
                         phrases.Add(new Multi(lineX, lineY).Textured(txr));
                         runningLength += txr.Width;
                         maxLineWidth = runningLength > maxLineWidth ? runningLength : maxLineWidth;
-                        t.Dispose();
                     }
                 }
             }

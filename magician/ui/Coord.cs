@@ -64,7 +64,6 @@ namespace Magician.UI
                 horizSpacer[0].Textured(tx.Render());
 
                 spacers0.Add(horizSpacer);
-                tx.Dispose();
 
 
                 // Add smaller perpendicular subdividers
