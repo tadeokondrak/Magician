@@ -9,8 +9,6 @@ namespace Magician.Renderer
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        bool disposed = false;
-
         // Create a texture from an image file
         public Texture(string filepath, int width, int height)
         {
@@ -77,17 +75,9 @@ namespace Magician.Renderer
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (texture != IntPtr.Zero)
             {
-                if (disposing)
-                {
-                    //w = 0;
-                    //h = 0;
-                }
-                // Destroy the texture
                 SDL_DestroyTexture(texture);
-                texture = IntPtr.Zero;
-                disposed = true;
             }
         }
 
