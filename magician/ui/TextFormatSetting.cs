@@ -19,7 +19,7 @@ namespace Magician.UI
         bool closingTag = false;
         Color? col;
         int? size;
-        public TextFormatSetting(Color? col=null, int? size=null, bool closingTag=false)
+        public TextFormatSetting(Color? col = null, int? size = null, bool closingTag = false)
         {
             this.col = col;
             this.size = size;
