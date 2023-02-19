@@ -94,11 +94,13 @@ namespace Magician
                     SDL_SetRenderTarget(SDLGlobals.renderer, texture);
                     SDL_QueryTexture(texture, out _, out _, out width, out height);
                     IntPtr surface = SDL_CreateRGBSurfaceWithFormat(SDL_RLEACCEL, width, height, 0, SDL_PIXELFORMAT_ARGB8888);
-                    SDL_Rect r = new SDL_Rect();
-                    r.x = 0;
-                    r.y = 0;
-                    r.w = Data.Globals.winWidth;
-                    r.h = Data.Globals.winHeight;
+                    SDL_Rect r = new()
+                    {
+                        x = 0,
+                        y = 0,
+                        w = Data.Globals.winWidth,
+                        h = Data.Globals.winHeight,
+                    };
                     unsafe
                     {
                         SDL_SetRenderTarget(SDLGlobals.renderer, IntPtr.Zero);
@@ -115,17 +117,22 @@ namespace Magician
                 }
 
                 // Display
-                SDL_Rect srcRect;
-                srcRect.x = 0;
-                srcRect.y = 0;
-                srcRect.w = Data.Globals.winWidth;
-                srcRect.h = Data.Globals.winHeight;
-                SDL_Rect dstRect;
-                dstRect.x = 0;
-                dstRect.y = 0;
-                dstRect.w = Data.Globals.winWidth;
-                dstRect.h = Data.Globals.winHeight;
-                
+                SDL_Rect srcRect = new()
+                {
+                    x = 0,
+                    y = 0,
+                    w = Data.Globals.winWidth,
+                    h = Data.Globals.winHeight,
+                };
+
+                SDL_Rect dstRect = new()
+                {
+                    x = 0,
+                    y = 0,
+                    w = Data.Globals.winWidth,
+                    h = Data.Globals.winHeight,
+                };
+
                 if (Renderer.Control.display)
                 {
                     SDL_SetRenderTarget(SDLGlobals.renderer, IntPtr.Zero);
