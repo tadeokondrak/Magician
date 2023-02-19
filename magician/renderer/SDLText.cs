@@ -1,3 +1,5 @@
+using System.Numerics;
+using Magician.Geo;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -57,15 +59,113 @@ namespace Magician.Renderer
             //throw new NotImplementedException("Text as Texture not supported. Please file an issue at https://github.com/Calendis/Magician");
         }
 
-        Multi AsMulti()
+        public Multi AsMulti()
         {
-            Scribe.Error("Text as Multi not supported yet");
-            throw new Exception();
+            TextOptions textOptions = new(font);
+            MultiGlyphRenderer renderer = new(c);
+            TextRenderer.RenderTextTo(renderer, s, textOptions);
+            return renderer.Parent.Parented(Ref.Origin);
         }
 
         public override string ToString()
         {
             return $"Text {s}";
+        }
+    }
+
+    class MultiGlyphRenderer : IGlyphRenderer
+    {
+        public Multi Parent { get; private set; } = new Multi().DrawFlags(DrawMode.INVISIBLE);
+        Color color;
+        Multi? current;
+
+        public MultiGlyphRenderer(Color color)
+        {
+            this.color = color;
+        }
+
+        public void BeginFigure()
+        {
+        }
+
+        public bool BeginGlyph(FontRectangle bounds, GlyphRendererParameters parameters)
+        {
+            return true;
+        }
+
+        public void BeginText(FontRectangle bounds)
+        {
+        }
+
+        public void EndFigure()
+        {
+        }
+
+        public void EndGlyph()
+        {
+        }
+
+        public void EndText()
+        {
+        }
+
+        public void LineTo(Vector2 point)
+        {
+            Multi last = current!;
+            current = Create.Point(Parent, point.X, point.Y, Data.Col.UIDefault.FG);
+            Parent.Add(Create.Line(last, current, Data.Col.UIDefault.FG).Colored(color));
+            Console.WriteLine("{0} {1} {2} {3}", last.X, last.Y, current.X, current.Y);
+        }
+
+        public void MoveTo(Vector2 point)
+        {
+            current = Create.Point(Parent, point.X, point.Y, Data.Col.UIDefault.FG);
+        }
+
+        public void QuadraticBezierTo(Vector2 secondControlPoint, Vector2 point)
+        {
+            AGG.curve3 curve = new(current!.X, current!.Y, secondControlPoint.X, secondControlPoint.Y, point.X, point.Y);
+            double x = 0;
+            double y = 0;
+            while (true)
+            {
+                switch (curve.vertex(ref x, ref y))
+                {
+                    case AGG.Constants.path_cmd_stop:
+                        return;
+                    case AGG.Constants.path_cmd_move_to:
+                        MoveTo(new Vector2((float)x, (float)y));
+                        break;
+                    case AGG.Constants.path_cmd_line_to:
+                        LineTo(new Vector2((float)x, (float)y));
+                        break;
+                }
+            }
+        }
+
+        public void CubicBezierTo(Vector2 secondControlPoint, Vector2 thirdControlPoint, Vector2 point)
+        {
+            AGG.curve4 curve = new(
+                current!.X, current!.Y,
+                secondControlPoint.X, secondControlPoint.Y,
+                thirdControlPoint.X, thirdControlPoint.Y,
+                point.X, point.Y);
+            double x = 0;
+            double y = 0;
+            while (true)
+            {
+                switch (curve.vertex(ref x, ref y))
+                {
+                    case AGG.Constants.path_cmd_stop:
+                        return;
+                    case AGG.Constants.path_cmd_move_to:
+                        MoveTo(new Vector2((float)x, (float)y));
+                        break;
+                    case AGG.Constants.path_cmd_line_to:
+                        LineTo(new Vector2((float)x, (float)y));
+                        break;
+                }
+            }
         }
     }
 }

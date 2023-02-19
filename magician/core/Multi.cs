@@ -44,7 +44,7 @@ namespace Magician
                 return _parent!;
             }
         }
-        
+
         /*
         *  Positional Properties
         */
@@ -447,7 +447,7 @@ namespace Magician
             Update();
             if (ds.Length < 2)
             {
-                ds = new double[]{0, 0};
+                ds = new double[] { 0, 0 };
             }
             double xOffset = ds[0];
             double yOffset = ds[1];
@@ -458,7 +458,7 @@ namespace Magician
                 // Pass the offsets to subdriving
                 c.Drive(xOffset, yOffset);
             }
-            
+
 
             int count = x.GetDrivers().Count;
             if (count != y.GetDrivers().Count)
@@ -871,7 +871,7 @@ namespace Magician
                         int tri0 = vertexIndices[0];
                         int tri1 = vertexIndices[1];
                         int tri2 = vertexIndices[2];
-                        
+
                         // If all vertex indices are 0, we're done
                         if ((vertexIndices[0] + vertexIndices[1] + vertexIndices[2] == 0))
                             break;
@@ -921,9 +921,9 @@ namespace Magician
                     IntPtr ip = new IntPtr();
                     SDL_RenderGeometry(SDLGlobals.renderer, ip, vs, vs.Length, null, 0);
                 }
-                catch (System.Exception)
+                catch (Exception ex)
                 {
-                    Scribe.Warn($"Failed to render {this}");
+                    Scribe.Warn($"Failed to render {this}: {ex.Message}");
                     Scribe.Warn(" You may have forgotten to set draw flags. Falling back to OUTERP...");
                     DrawFlags(DrawMode.OUTERP);
                 }

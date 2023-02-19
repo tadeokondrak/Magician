@@ -11,13 +11,14 @@ namespace Magician.Demos
         {
             // bg
             Origin["bg"] = new UI.RuledAxes(100, 10, 100, 10).Render();
+            Origin["a"] = new Renderer.Text("a", HSLA.RandomVisible(), 160).AsMulti().Positioned(0, 0);
 
             // Hexagonal grid
             Origin["hex grid"] = new Symbols.Hexagonal(7, 7).Render(45).Positioned(300, 0);
 
             /* Multi-line text */
             Origin["paragraph1"] = new UI.RichParagraph(0, 0, HSLA.RandomVisible(), 16, UI.Justification.CENTRE,
-                
+
                 $"{UI.TFS.RGB(255, 0, 0)}Rich paragraph{UI.TFS.Back} now supports",
                 $"{UI.TFS.RGB(255, 128, 0)}HTML-style{UI.TFS.RGB(255, 255, 0)} nesting,",
                 $"{UI.TFS.Back}because {UI.TFS.Back}why{new UI.TextFormatSetting(HSLA.RandomVisible(), 12)} not{UI.TFS.Back}?",
