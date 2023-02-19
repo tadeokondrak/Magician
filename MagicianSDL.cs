@@ -47,7 +47,7 @@ namespace Magician
                 Spellcaster.Loop(frames * timeResolution);
 
                 // Event handling
-                while (SDL_PollEvent(out SDL_Event sdlEvent) != 0 ? true : false)
+                while (SDL_PollEvent(out SDL_Event sdlEvent) != 0)
                 {
                     Interactive.Events.Process(sdlEvent);
                     switch (sdlEvent.type)
