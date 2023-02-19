@@ -26,7 +26,7 @@ namespace Magician.Demos
             );
 
             // Non-square mouseover
-            Origin["my star"] = Create.Star(-200, -250, HSLA.RandomVisible(), 10, 40, 140);
+            Origin["my star"] = Create.Star(-200, -250, HSLA.RandomVisible(), 10, 40, 140).Textured(new Renderer.Texture("arst"));
             mo = Interactive.Sensor.MouseOver(Origin["my star"]);
 
             /* Testing area */

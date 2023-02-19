@@ -90,6 +90,7 @@ namespace Magician.Renderer
             if (texture != IntPtr.Zero)
             {
                 SDL_DestroyTexture(texture);
+                texture = IntPtr.Zero;
             }
         }
 

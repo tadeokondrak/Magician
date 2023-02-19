@@ -1,3 +1,4 @@
+using Magician.Backend;
 using static SDL2.SDL;
 
 namespace Magician
@@ -6,5 +7,6 @@ namespace Magician
     {
         public static IntPtr renderer;
         public static IntPtr renderedTexture;
+        public static ITexture renderedTextureWrapper;
     }
 }

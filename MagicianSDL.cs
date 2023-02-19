@@ -1,46 +1,42 @@
 ﻿using static SDL2.SDL;
 using Magician.Library;
+using Magician.Backend;
 
 namespace Magician
 {
     class MagicianSDL
     {
+        static SDLWindow window;
+        static SDLRenderer renderer;
         static IntPtr win;
-        bool done = false;
-        int frames = 0;
-        int stopFrame = -1;
-        int driveDelay = 0;
-        double timeResolution = 0.1;
+        static bool done = false;
+        static int frames = 0;
+        static int stopFrame = -1;
+        static int driveDelay = 0;
+        static double timeResolution = 0.1;
 
         static void Main(string[] args)
         {
             /* Startup */
             Console.WriteLine(Data.App.Title);
-            MagicianSDL magicianSDL = new MagicianSDL();
-
-            magicianSDL.InitSDL();
-            magicianSDL.CreateWindow();
-            magicianSDL.CreateRenderer();
+            window = new();
+            renderer = window.CreateRenderer();
+            SDLGlobals.renderer = renderer.Renderer;
 
             // Load a spell
             Spellcaster.Load(new Demos.DefaultSpell());
 
             // Run
-            magicianSDL.MainLoop();
-
-            // Cleanup
-            SDL_DestroyRenderer(SDLGlobals.renderer);
-            SDL_DestroyWindow(win);
-            SDL_Quit();
-
+            MainLoop();
         }
 
-        void MainLoop()
+        static void MainLoop()
         {
             // Create a texture from the surface
             // Textures are hardware-acclerated, while surfaces use CPU rendering
-            SDLGlobals.renderedTexture = SDL_CreateTexture(SDLGlobals.renderer, SDL_PIXELFORMAT_RGBA8888, (int)SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
-                Data.Globals.winWidth, Data.Globals.winHeight);
+            SDLTexture renderTexture = renderer.CreateTexture(Data.Globals.winWidth, Data.Globals.winHeight);
+            SDLGlobals.renderedTexture = renderTexture.Texture;
+            SDLGlobals.renderedTextureWrapper = renderTexture;
 
             while (!done)
             {
@@ -60,8 +56,10 @@ namespace Magician
                                 case SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED:
                                     Data.Globals.winWidth = windowEvent.data1;
                                     Data.Globals.winHeight = windowEvent.data2;
-                                    SDLGlobals.renderedTexture = SDL_CreateTexture(SDLGlobals.renderer, SDL_PIXELFORMAT_RGBA8888, (int)SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
-                                        Data.Globals.winWidth, Data.Globals.winHeight);
+                                    renderTexture = renderer.CreateTexture(Data.Globals.winWidth, Data.Globals.winHeight);
+                                    SDLGlobals.renderedTexture = renderTexture.Texture;
+                                    SDLGlobals.renderedTextureWrapper = renderTexture;
+
                                     break;
                             }
                             break;
@@ -74,7 +72,7 @@ namespace Magician
                 // Drive things
                 if (frames >= driveDelay)
                 {
-                    Drive();
+                    Geo.Ref.Origin.Drive();
                 }
 
                 // Draw things
@@ -86,7 +84,7 @@ namespace Magician
         }
 
         // Renders each frame to a texture and displays the texture
-        void Render()
+        static void Render()
         {
             if (Renderer.Control.doRender)
             {
@@ -100,13 +98,11 @@ namespace Magician
                 // SAVE FRAME TO IMAGE
                 if (Renderer.Control.saveFrame && frames < stopFrame)
                 {
-                    IntPtr texture = SDL_CreateTexture(SDLGlobals.renderer, SDL_PIXELFORMAT_ARGB8888, 0, Data.Globals.winWidth, Data.Globals.winHeight);
+                    using SDLTexture texture = renderer.CreateTexture(Data.Globals.winWidth, Data.Globals.winHeight);
                     IntPtr target = SDL_GetRenderTarget(SDLGlobals.renderer);
 
-                    int width, height;
-                    SDL_SetRenderTarget(SDLGlobals.renderer, texture);
-                    SDL_QueryTexture(texture, out _, out _, out width, out height);
-                    IntPtr surface = SDL_CreateRGBSurfaceWithFormat(SDL_RLEACCEL, width, height, 0, SDL_PIXELFORMAT_ARGB8888);
+                    renderer.Target = texture;
+                    IntPtr surface = SDL_CreateRGBSurfaceWithFormat(SDL_RLEACCEL, texture.Width, texture.Height, 0, SDL_PIXELFORMAT_ARGB8888);
                     SDL_Rect r = new()
                     {
                         x = 0,
@@ -116,17 +112,16 @@ namespace Magician
                     };
                     unsafe
                     {
-                        SDL_SetRenderTarget(SDLGlobals.renderer, IntPtr.Zero);
+                        renderer.Target = null;
 
                         SDL_Surface* surf = (SDL_Surface*)surface;
                         SDL_RenderReadPixels(SDLGlobals.renderer, ref r, SDL_PIXELFORMAT_ARGB8888, surf->pixels, surf->pitch);
-                        SDL_SaveBMP(surface, $"saved/frame_{Renderer.Control.saveCount.ToString("D4")}.bmp");
+                        SDL_SaveBMP(surface, $"saved/frame_{Renderer.Control.saveCount:D4}.bmp");
                         Renderer.Control.saveCount++;
                         SDL_FreeSurface(surface);
 
-                        SDL_SetRenderTarget(SDLGlobals.renderer, SDLGlobals.renderedTexture);
+                        renderer.Target = SDLGlobals.renderedTextureWrapper;
                     }
-                    SDL_DestroyTexture(texture);
                 }
 
                 // Display
@@ -148,49 +143,13 @@ namespace Magician
 
                 if (Renderer.Control.display)
                 {
-                    SDL_SetRenderTarget(SDLGlobals.renderer, IntPtr.Zero);
+                    renderer.Target = null;
                     SDL_RenderCopy(SDLGlobals.renderer, SDLGlobals.renderedTexture, ref srcRect, ref dstRect);
-                    SDL_RenderPresent(SDLGlobals.renderer);
+                    renderer.Present();
                 }
                 //SDL_Delay(1/6);
             }
             frames++;
-        }
-
-        // Drive the dynamics of Multis and Quantities
-        // TODO: move this responsibility to the spellcaster
-        void Drive()
-        {
-            Geo.Ref.Origin.Drive();
-        }
-        void InitSDL()
-        {
-            if (SDL_Init(SDL_INIT_VIDEO) < 0)
-            {
-                Console.WriteLine($"Error initializing SDL: {SDL_GetError()}");
-            }
-        }
-        void CreateWindow()
-        {
-            win = SDL_CreateWindow(Data.App.Title, 0, 0, Data.Globals.winWidth, Data.Globals.winHeight, SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
-
-            if (win == IntPtr.Zero)
-            {
-                Console.WriteLine($"Error creating the window: {SDL_GetError()}");
-            }
-        }
-        void CreateRenderer()
-        {
-            // With VSync
-            SDLGlobals.renderer = SDL_CreateRenderer(win, -1,
-            SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC | SDL_RendererFlags.SDL_RENDERER_TARGETTEXTURE);
-
-            // No VSync
-            //SDLGlobals.renderer = SDL_CreateRenderer(win, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
-            if (SDLGlobals.renderer == IntPtr.Zero)
-            {
-                Console.WriteLine($"Error creating the renderer: {SDL_GetError()}");
-            }
         }
     }
 }
