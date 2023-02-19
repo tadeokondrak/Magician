@@ -46,7 +46,7 @@ namespace Magician.UI
             // Size
             if (size != null)
             {
-                tfs += Prefix.ToString() + $"{(char)FormatSetting.SIZE}{size.ToString()}";
+                tfs += Prefix.ToString() + $"{(char)FormatSetting.SIZE}{size}";
             }
             return tfs + Delimiter.ToString();
         }
