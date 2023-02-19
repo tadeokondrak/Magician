@@ -9,8 +9,6 @@ namespace Magician.UI
         Paragraph(double x = 0, double y = 0, string fontPath = "", Color? c = null, int? size = null, params string[] ss) : base(x, y, c ?? Data.Col.UIDefault.FG, DrawMode.INVISIBLE)
         {
             sentences = new string[ss.Length];
-            // If no path given, use the default
-            fontPath = fontPath == "" ? Text.FallbackFontPath : fontPath;
             for (int i = 0; i < ss.Length; i++)
             {
                 sentences[i] = ss[i];
@@ -63,9 +61,6 @@ namespace Magician.UI
             size = sz ?? Data.Globals.fontSize;
             inStr = inputStr;
             this.just = just;
-
-            // If no path given, use the default
-            fontPath = fontPath == "" ? Text.FallbackFontPath : fontPath;
 
             // Group the input into text and formatters
             List<string[]> groupedFormats = new List<string[]>();

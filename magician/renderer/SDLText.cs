@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Reflection;
 using Magician.Geo;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
@@ -12,26 +13,30 @@ namespace Magician.Renderer
 {
     public class Text
     {
-        public static string FallbackFontPath = "";
-        string fontPath;
 
         string s;
         Color c;
         int size;
         Font font;
 
+
         public Text(string s, Color c, int size, string fp = "")
         {
-            if (FallbackFontPath == "")
-            {
-                throw new InvalidDataException("Must set fallback font path before using Text");
-            }
             this.s = s;
             this.c = c;
             this.size = size;
-            fontPath = fp == "" ? FallbackFontPath : fp;
+
             FontCollection collection = new();
-            FontFamily family = collection.Add(fontPath);
+            FontFamily family;
+            if (fp != "")
+            {
+                family = collection.Add(fp);
+            }
+            else
+            {
+                using Stream stream = typeof(Text).Assembly.GetManifestResourceStream("MagicianDemo.magician.ui.assets.fonts.Space_Mono.SpaceMono-Regular.ttf")!;
+                family = collection.Add(stream);
+            }
             font = family.CreateFont(size);
         }
 

@@ -21,7 +21,6 @@ namespace Magician
             magicianSDL.InitSDL();
             magicianSDL.CreateWindow();
             magicianSDL.CreateRenderer();
-            Renderer.Text.FallbackFontPath = "magician/ui/assets/fonts/Space_Mono/SpaceMono-Regular.ttf";
 
             // Load a spell
             Spellcaster.Load(new Demos.DefaultSpell());
