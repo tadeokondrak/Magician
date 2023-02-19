@@ -55,14 +55,14 @@ namespace Magician.UI
     /* Preset TextFormatSettings so you don't have to keep typing "TextFormatSetting" */
     public static class TFS
     {
-        public static TextFormatSetting Red = new TextFormatSetting(new RGBA(0xff0000ff));
-        public static TextFormatSetting Green = new TextFormatSetting(new RGBA(0x00ff00ff));
-        public static TextFormatSetting Blue = new TextFormatSetting(new RGBA(0x0000ffff));
-        public static TextFormatSetting RGB(int r, int g, int b) => new TextFormatSetting(new RGBA(r, g, b, 255));
+        public static TextFormatSetting Red => new(new RGBA(0xff0000ff));
+        public static TextFormatSetting Green => new(new RGBA(0x00ff00ff));
+        public static TextFormatSetting Blue => new(new RGBA(0x0000ffff));
+        public static TextFormatSetting RGB(int r, int g, int b) => new(new RGBA(r, g, b, 255));
 
-        public static TextFormatSetting Small = new TextFormatSetting(null, 12);
-        public static TextFormatSetting Size(int s) => new TextFormatSetting(null, s);
+        public static TextFormatSetting Small => new(null, 12);
+        public static TextFormatSetting Size(int s) => new(null, s);
 
-        public static TextFormatSetting Back = new TextFormatSetting(closingTag: true);
+        public static TextFormatSetting Back => new(closingTag: true);
     }
 }
