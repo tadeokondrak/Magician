@@ -12,7 +12,7 @@ namespace Magician.UI
             for (int i = 0; i < ss.Length; i++)
             {
                 sentences[i] = ss[i];
-                size = size ?? Data.Globals.fontSize;
+                size ??= Data.Globals.fontSize;
                 Text t = new Text(sentences[i], col, (int)size, fontPath);
                 this[$"line{i}"] = new Multi(0, -i * (int)size)
                 .Textured(t.Render())
