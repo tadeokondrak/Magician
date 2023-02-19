@@ -21,7 +21,8 @@ namespace Magician.Renderer
             }
             catch (IOException)
             {
-                image = Image.Load<Rgba32>("magician/ui/assets/default.png");
+                using Stream stream = typeof(Text).Assembly.GetManifestResourceStream("MagicianDemo.magician.ui.assets.default.png")!;
+                image = Image.Load<Rgba32>(stream);
             }
             Width = image.Width;
             Height = image.Height;

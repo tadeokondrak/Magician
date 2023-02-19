@@ -16,7 +16,9 @@
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
     <Content Remove="magician/ui/assets/fonts/Space_Mono/SpaceMono-Regular.ttf" />
+    <Content Remove="magician/ui/assets/default.png" />
     <EmbeddedResource Include="magician/ui/assets/fonts/Space_Mono/SpaceMono-Regular.ttf" />
+    <EmbeddedResource Include="magician/ui/assets/default.png" />
   </ItemGroup>
 
 </Project>
