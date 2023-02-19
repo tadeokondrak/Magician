@@ -1,3 +1,5 @@
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static SDL2.SDL;
 
 // Wrapper around an SDL texture
@@ -10,16 +12,25 @@ namespace Magician.Renderer
         public int Height { get; private set; }
 
         // Create a texture from an image file
-        public Texture(string filepath, int width, int height)
+        public Texture(string filepath)
         {
-
-            Width = width;
-            Height = height;
-            IntPtr surface = SDL2.SDL_image.IMG_Load(filepath);
-            if (surface == IntPtr.Zero)
+            Image<Rgba32> image;
+            try
             {
-                Console.WriteLine($"Could not load {filepath}");
-                surface = SDL2.SDL_image.IMG_Load("magician/ui/assets/default.png");
+                image = Image.Load<Rgba32>(filepath);
+            }
+            catch (IOException)
+            {
+                image = Image.Load<Rgba32>("magician/ui/assets/default.png");
+            }
+            Width = image.Width;
+            Height = image.Height;
+            IntPtr surface = SDL_CreateRGBSurfaceWithFormat(0, Width, Height, 32, SDL_PIXELFORMAT_ABGR8888);
+            unsafe
+            {
+                SDL_Surface* surfacePtr = (SDL_Surface*)surface;
+                Span<Rgba32> dest = new((void*)surfacePtr->pixels, surfacePtr->pitch * surfacePtr->h);
+                image.CopyPixelDataTo(dest);
             }
 
             texture = SDL_CreateTextureFromSurface(SDLGlobals.renderer, surface);
