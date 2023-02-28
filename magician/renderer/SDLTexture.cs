@@ -1,3 +1,4 @@
+using Magician.Renderer;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using static SDL2.SDL;
@@ -55,7 +56,7 @@ namespace Magician.Renderer
         {
 
             // Options
-            SDL_SetRenderDrawBlendMode(SDLGlobals.renderer, SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            Control.SetRenderDrawBlendMode(SDL_BlendMode.SDL_BLENDMODE_BLEND);
             SDL_SetTextureBlendMode(texture, SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
             // Draw objects

@@ -789,24 +789,17 @@ namespace Magician
         public void Draw(double xOffset, double yOffset)
         {
             Control.SaveTarget();
-            SDL_SetRenderTarget(SDLGlobals.renderer, SDLGlobals.renderedTexture);
-            double r = col.R;
-            double g = col.G;
-            double b = col.B;
-            double a = col.A;
-
-            float drawX = (float)XCartesian(xOffset);
-            float drawY = (float)YCartesian(yOffset);
+            Control.SetTarget(SDLGlobals.renderedTexture);
 
             // If the flag is set, draw the relative origin
             if ((drawMode & DrawMode.POINT) > 0)
             {
-                SDL_SetRenderDrawColor(SDLGlobals.renderer, (byte)r, (byte)g, (byte)b, (byte)a);
+                Control.SetDrawColor(col);
                 //SDL_RenderDrawPointF(SDLGlobals.renderer, (float)XCartesian(xOffset), (float)YCartesian(yOffset));
                 //SDL_RenderDrawPointF(SDLGlobals.renderer, (float)XCartesian(0), (float)YCartesianz(0));
                 if (_parent != null)
                 {
-                    SDL_RenderDrawPointF(SDLGlobals.renderer, (float)_parent.XCartesian(xOffset), (float)_parent.YCartesian(yOffset));
+                    Control.DrawPointF((float)_parent.XCartesian(xOffset), (float)_parent.YCartesian(yOffset));
                 }
             }
 
@@ -817,16 +810,10 @@ namespace Magician
                 {
                     Multi lineP0 = csts[i];
                     Multi lineP1 = csts[i + 1];
-                    double subr = lineP0.Col.R;
-                    double subg = lineP0.Col.G;
-                    double subb = lineP0.Col.B;
-                    double suba = lineP0.Col.A;
 
-                    SDL_SetRenderDrawColor(SDLGlobals.renderer, (byte)subr, (byte)subg, (byte)subb, (byte)suba);
-                    SDL_RenderDrawLineF(SDLGlobals.renderer,
-                    (float)lineP0.XCartesian(xOffset), (float)lineP0.YCartesian(yOffset),
-                    (float)lineP1.XCartesian(xOffset), (float)lineP1.YCartesian(yOffset));
-
+                    Control.SetDrawColor(lineP0.Col);
+                    Control.DrawLineF((float)lineP0.XCartesian(xOffset), (float)lineP0.YCartesian(yOffset),
+                        (float)lineP1.XCartesian(xOffset), (float)lineP1.YCartesian(yOffset));
                 }
             }
 
@@ -836,15 +823,9 @@ namespace Magician
                 Multi pLast = csts[csts.Count - 1];
                 Multi pFirst = csts[0];
 
-                double subr = pLast.Col.R;
-                double subg = pLast.Col.G;
-                double subb = pLast.Col.B;
-                double suba = pLast.Col.A;
-
-                SDL_SetRenderDrawColor(SDLGlobals.renderer, (byte)subr, (byte)subg, (byte)subb, (byte)suba);
-                SDL_RenderDrawLineF(SDLGlobals.renderer,
-                (float)pLast.XCartesian(xOffset), (float)pLast.YCartesian(yOffset),
-                (float)pFirst.XCartesian(xOffset), (float)pFirst.YCartesian(yOffset));
+                Control.SetDrawColor(pLast.Col);
+                Control.DrawLineF((float)pLast.XCartesian(xOffset), (float)pLast.YCartesian(yOffset),
+                    (float)pFirst.XCartesian(xOffset), (float)pFirst.YCartesian(yOffset));
             }
 
 
@@ -918,8 +899,8 @@ namespace Magician
                         vs[3 * i + 2].color = c;
                     }
 
-                    IntPtr ip = new IntPtr();
-                    SDL_RenderGeometry(SDLGlobals.renderer, ip, vs, vs.Length, null, 0);
+                    Control.RenderGeometry(IntPtr.Zero, vs, vs.Length, null, 0);
+
                 }
                 catch (Exception ex)
                 {
