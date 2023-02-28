@@ -1,7 +1,7 @@
-﻿using static SDL2.SDL;
+using static SDL2.SDL;
 using Magician.Library;
 
-namespace Magician
+namespace Magician.Demo
 {
     class MagicianSDL
     {
@@ -22,7 +22,7 @@ namespace Magician
             magicianSDL.CreateWindow();
             magicianSDL.CreateRenderer();
             SDL2.SDL_ttf.TTF_Init();
-            Renderer.Text.FallbackFontPath = "magician/ui/assets/fonts/Space_Mono/SpaceMono-Regular.ttf";
+            Renderer.Text.FallbackFontPath = "Magician/ui/assets/fonts/Space_Mono/SpaceMono-Regular.ttf";
 
             // Load a spell
             Spellbook.Load(new Demos.DefaultSpell());
@@ -140,7 +140,7 @@ namespace Magician
                 dstRect.y = 0;
                 dstRect.w = Data.Globals.winWidth;
                 dstRect.h = Data.Globals.winHeight;
-                
+
                 if (Renderer.Control.display)
                 {
                     SDL_SetRenderTarget(SDLGlobals.renderer, IntPtr.Zero);

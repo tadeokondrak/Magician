@@ -21,7 +21,7 @@ namespace Magician.Renderer
             if (surface == IntPtr.Zero)
             {
                 Console.WriteLine($"Could not load {filepath}");
-                surface = SDL2.SDL_image.IMG_Load("magician/ui/assets/default.png");
+                surface = SDL2.SDL_image.IMG_Load("Magician/ui/assets/default.png");
             }
 
             texture = SDL_CreateTextureFromSurface(SDLGlobals.renderer, surface);
